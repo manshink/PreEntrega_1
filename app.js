@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// Importamos los routers que creamos
 const mocksRouter = require('./routes/mocks.router');
 const usersRouter = require('./routes/users.router');
 const petsRouter = require('./routes/pets.router');
@@ -10,35 +11,36 @@ const petsRouter = require('./routes/pets.router');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Configuramos los middlewares básicos que necesitamos
+app.use(cors()); // Esto permite que otros dominios puedan hacer peticiones a nuestra API
+app.use(express.json()); // Para poder leer JSON en las peticiones
+app.use(express.urlencoded({ extended: true })); // Para leer datos de formularios
 
-// Database connection
+// Conectamos a MongoDB - esto es lo que aprendimos en clase sobre bases de datos
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/mocks-db', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => console.log('¡Conectado a MongoDB! 🎉'))
+.catch(err => console.error('Error conectando a MongoDB:', err));
 
-// Routes
-app.use('/api/mocks', mocksRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/pets', petsRouter);
+// Configuramos las rutas - cada router maneja su propia sección de la API
+app.use('/api/mocks', mocksRouter); // Este es el router principal que nos piden
+app.use('/api/users', usersRouter); // Para manejar usuarios
+app.use('/api/pets', petsRouter); // Para manejar mascotas
 
-// Health check endpoint
+// Endpoint de prueba para ver si el servidor está funcionando
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+  res.json({ status: 'OK', message: '¡El servidor está funcionando!' });
 });
 
-// Error handling middleware
+// Middleware para manejar errores - esto es importante para que no se rompa todo
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({ error: '¡Ups! Algo salió mal 😅' });
 });
 
+// Iniciamos el servidor
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 }); 

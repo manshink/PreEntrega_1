@@ -4,8 +4,9 @@ const MockingModule = require('../utils/mockingModule');
 const User = require('../models/User');
 const Pet = require('../models/Pet');
 
-// GET /api/mocks/mockingpets - Endpoint migrado del primer desafío
+// GET /api/mocks/mockingpets - Este es el endpoint que nos piden migrar del primer desafío
 router.get('/mockingpets', (req, res) => {
+  // Aquí tenemos una lista de mascotas de ejemplo - esto es lo que teníamos antes
   const pets = [
     {
       _id: "507f1f77bcf86cd799439011",
@@ -59,62 +60,71 @@ router.get('/mockingpets', (req, res) => {
     }
   ];
 
+  // Retornamos las mascotas en formato JSON
   res.json({
     status: 'success',
     payload: pets
   });
 });
 
-// GET /api/mocks/mockingusers - Generar usuarios con el módulo de mocking
+// GET /api/mocks/mockingusers - Este endpoint genera usuarios usando nuestro módulo de mocking
 router.get('/mockingusers', async (req, res) => {
   try {
+    // Obtenemos la cantidad de usuarios que queremos generar (por defecto 50)
     const count = parseInt(req.query.count) || 50;
+    // Usamos nuestro módulo para generar los usuarios
     const users = await MockingModule.generateUsers(count);
     
+    // Retornamos los usuarios generados
     res.json({
       status: 'success',
       payload: users,
       total: users.length
     });
   } catch (error) {
-    console.error('Error generating mock users:', error);
+    console.error('Error generando usuarios falsos:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Error generating mock users',
+      message: 'Error generando usuarios falsos',
       error: error.message
     });
   }
 });
 
-// POST /api/mocks/generateData - Generar e insertar datos en la base de datos
+// POST /api/mocks/generateData - Este endpoint genera datos y los guarda en la base de datos
 router.post('/generateData', async (req, res) => {
   try {
+    // Obtenemos cuántos usuarios y mascotas queremos crear
     const { users: userCount = 0, pets: petCount = 0 } = req.body;
     
+    // Validamos que los números no sean negativos
     if (userCount < 0 || petCount < 0) {
       return res.status(400).json({
         status: 'error',
-        message: 'Count values must be non-negative'
+        message: 'Los valores deben ser números positivos'
       });
     }
 
+    // Objeto para guardar los resultados
     const results = {
       users: { created: 0, errors: [] },
       pets: { created: 0, errors: [] }
     };
 
-    // Generate and insert users
+    // Generamos e insertamos usuarios si nos piden más de 0
     if (userCount > 0) {
       const mockUsers = await MockingModule.generateUsers(userCount);
       
+      // Recorremos cada usuario generado
       for (const mockUser of mockUsers) {
         try {
-          // Remove _id from mock data to let MongoDB generate it
+          // Removemos el _id del mock para que MongoDB genere uno nuevo
           const { _id, ...userData } = mockUser;
           const user = new User(userData);
-          await user.save();
-          results.users.created++;
+          await user.save(); // Guardamos en la base de datos
+          results.users.created++; // Contamos cuántos se crearon
         } catch (error) {
+          // Si hay error, lo guardamos para reportarlo
           results.users.errors.push({
             email: mockUser.email,
             error: error.message
@@ -123,18 +133,20 @@ router.post('/generateData', async (req, res) => {
       }
     }
 
-    // Generate and insert pets
+    // Generamos e insertamos mascotas si nos piden más de 0
     if (petCount > 0) {
       const mockPets = MockingModule.generatePets(petCount);
       
+      // Recorremos cada mascota generada
       for (const mockPet of mockPets) {
         try {
-          // Remove _id from mock data to let MongoDB generate it
+          // Removemos el _id del mock para que MongoDB genere uno nuevo
           const { _id, ...petData } = mockPet;
           const pet = new Pet(petData);
-          await pet.save();
-          results.pets.created++;
+          await pet.save(); // Guardamos en la base de datos
+          results.pets.created++; // Contamos cuántas se crearon
         } catch (error) {
+          // Si hay error, lo guardamos para reportarlo
           results.pets.errors.push({
             name: mockPet.name,
             error: error.message
@@ -143,20 +155,22 @@ router.post('/generateData', async (req, res) => {
       }
     }
 
+    // Retornamos el resultado de todo el proceso
     res.json({
       status: 'success',
-      message: 'Data generated and inserted successfully',
+      message: '¡Datos generados e insertados exitosamente! 🎉',
       results: results
     });
 
   } catch (error) {
-    console.error('Error generating data:', error);
+    console.error('Error generando datos:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Error generating and inserting data',
+      message: 'Error generando e insertando datos',
       error: error.message
     });
   }
 });
 
+// Exportamos el router para usarlo en app.js
 module.exports = router; 
