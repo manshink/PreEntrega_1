@@ -1,0 +1,25 @@
+{
+  "name": "preentrega-1",
+  "version": "1.0.0",
+  "description": "Backend project with mocks router",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "bcrypt": "^5.1.0",
+    "faker": "^6.6.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "axios": "^1.5.0"
+  },
+  "keywords": ["backend", "express", "mongoose", "mocks"],
+  "author": "",
+  "license": "MIT"
+} 
