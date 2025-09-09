@@ -2,7 +2,110 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-// GET /api/users - Este endpoint obtiene todos los usuarios con paginación
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserResponse:
+ *       type: 'object'
+ *       properties:
+ *         status:
+ *           type: 'string'
+ *           example: 'success'
+ *         payload:
+ *           type: 'array'
+ *           items:
+ *             $ref: '#/components/schemas/User'
+ *         totalPages:
+ *           type: 'number'
+ *           description: 'Total de páginas'
+ *         prevPage:
+ *           type: 'number'
+ *           nullable: true
+ *           description: 'Página anterior'
+ *         nextPage:
+ *           type: 'number'
+ *           nullable: true
+ *           description: 'Página siguiente'
+ *         page:
+ *           type: 'number'
+ *           description: 'Página actual'
+ *         hasPrevPage:
+ *           type: 'boolean'
+ *           description: 'Tiene página anterior'
+ *         hasNextPage:
+ *           type: 'boolean'
+ *           description: 'Tiene página siguiente'
+ *         prevLink:
+ *           type: 'string'
+ *           nullable: true
+ *           description: 'Link a página anterior'
+ *         nextLink:
+ *           type: 'string'
+ *           nullable: true
+ *           description: 'Link a página siguiente'
+ *     UserSingleResponse:
+ *       type: 'object'
+ *       properties:
+ *         status:
+ *           type: 'string'
+ *           example: 'success'
+ *         payload:
+ *           $ref: '#/components/schemas/User'
+ *     UserCountResponse:
+ *       type: 'object'
+ *       properties:
+ *         status:
+ *           type: 'string'
+ *           example: 'success'
+ *         payload:
+ *           type: 'object'
+ *           properties:
+ *             total:
+ *               type: 'number'
+ *               description: 'Total de usuarios'
+ */
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Obtener todos los usuarios con paginación
+ *     description: Retorna una lista paginada de todos los usuarios registrados en el sistema
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número de usuarios por página
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Campo por el cual ordenar los resultados
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/', async (req, res) => {
   try {
     // Obtenemos los parámetros de la URL (query parameters)
@@ -42,7 +145,40 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/users/:id - Este endpoint obtiene un usuario específico por su ID
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Obtener un usuario por ID
+ *     description: Retorna la información de un usuario específico incluyendo sus mascotas
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID único del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserSingleResponse'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/:id', async (req, res) => {
   try {
     // Buscamos el usuario por su ID y también traemos sus mascotas
@@ -71,7 +207,27 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /api/users/count/total - Este endpoint cuenta cuántos usuarios hay en total
+/**
+ * @swagger
+ * /api/users/count/total:
+ *   get:
+ *     summary: Contar total de usuarios
+ *     description: Retorna el número total de usuarios registrados en el sistema
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Conteo obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserCountResponse'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/count/total', async (req, res) => {
   try {
     // Contamos todos los documentos en la colección de usuarios

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Base de datos MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: pet-adoption-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: pet-adoption-db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - pet-adoption-network
+
+  # Aplicación Node.js
+  app:
+    build: .
+    container_name: pet-adoption-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/pet-adoption-db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - pet-adoption-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  pet-adoption-network:
+    driver: bridge
+
