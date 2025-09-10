@@ -4,17 +4,17 @@
 
 ## 🐳 Docker Hub
 
-**Imagen de Docker disponible en:** [Docker Hub - Pet Adoption API](https://hub.docker.com/r/tu-usuario-dockerhub/pet-adoption-api)
+**Imagen de Docker disponible en:** [Docker Hub - Pet Adoption API](https://hub.docker.com/r/manshink/pet-adoption-api)
 
 ```bash
 # Para ejecutar la imagen desde Docker Hub
-docker run -p 8080:8080 tu-usuario-dockerhub/pet-adoption-api:latest
+docker run -p 8080:8080 manshink/pet-adoption-api:latest
 
 # O con Docker Compose (incluye MongoDB)
 docker-compose up -d
 ```
 
-> **Nota:** Reemplaza `tu-usuario-dockerhub` con tu nombre de usuario real de Docker Hub. Ver [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md) para instrucciones detalladas de despliegue.
+> **Nota:** La imagen está disponible en Docker Hub como `manshink/pet-adoption-api:latest`. Ver [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md) para instrucciones detalladas de despliegue.
 
 ## 🤔 ¿De qué se trata este proyecto?
 
